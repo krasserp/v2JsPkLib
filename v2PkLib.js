@@ -4,6 +4,24 @@
     $.fn.doesExist = function(item){
         return this.length > 0;
     };
+
+
+    $.fn.imgLoad = function(callback) {
+            return this.each(function() {
+                if (callback) {
+                    if (this.complete || /*for IE 10-*/ $(this).height() > 0) {
+                        callback.apply(this);
+                    }
+                    else {
+                        $(this).on('load', function(){
+                            callback.apply(this);
+                        });
+                    }
+                }
+            });
+        };
+
+
     $.fn.helper = function(action,options ) {
 
         // basic IE console error prevention
@@ -18,7 +36,7 @@
             // These are the defaults.
             from: 0,
             to: 2,
-            imgTableCellSelector: '.sq-atm1d-table-cell',
+            imgTableCellSelector: '.sq-atm1d-table-cell img',
             imgArr: [ 'http://static.businessinsider.com/image/51963a396bb3f77b52000004/image.jpg',
                         'http://microlancer.lancerassets.com/uploads/service_attachments/7509/thumbnail_agile_mascot-1369328743.jpg',
                         'http://s3.amazonaws.com/wbstaticfiles/users/929/ts_244336_dog-hed-1-bwpng.jpg'
@@ -76,14 +94,26 @@
          * @return {[type]}
          */
         if(action ==='makeImbBtn'){
-            var t = setTimeout(function(){
-              $(settings.imgTableCellSelector).each(function(){
-                var imgSrc = $ (this).find('img').attr('src');
-                $ (this).find('img').css('display','none');
-                $ (this).find('.sq-atm1d-btn-bg').css("background-image","url('"+imgSrc+"')");
-                $ (this).find('.sq-atm1d-btn-bg').css("background-size","cover");
-              });
-            },500);
+            var  callImgGeneration = function(times){
+              var counter = times;
+              // give it a rest something is seriously wrong if after 8 times the thing hasn't loaded
+              if (times > 8){
+                return;
+              }
+              if($(settings.imgTableCellSelector).length > 1){
+                    $(settings.imgTableCellSelector).imgLoad(function(){
+                      var imgSrc = $(this).attr('src');
+                      $(this).css('display','none');
+                      $(this).closest('div').parent().find('.sq-atm1d-btn-bg').css("background-image","url('"+imgSrc+"')");
+                      $(this).closest('div').parent().find('.sq-atm1d-btn-bg').css("background-size","cover");
+                      // specially for mobile rescale the height of the btns if the image is massive
+                      $('.sq-atm1d-table,.sq-atm1d-table-cell,li.sq-atm1d-btn').css('height', $(this).closest('div').parent().find('.sq-atm1d-btn-bg').height());
+                    });
+              } else {
+                setTimeout(function(){callImgGeneration(counter+1);}, 100);
+              }
+            };
+            callImgGeneration(0);
         }
 
         /**
