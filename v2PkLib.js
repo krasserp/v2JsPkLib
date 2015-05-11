@@ -86,6 +86,41 @@
                     b.removeClass('hidden');
                 }
         };
+
+
+        /**
+         * Card sort auto submit
+         * @param  {object} action [enable autosubmit]
+         * @return {[type]}        nothing
+         */
+        if(action==='cardSortAuto'){
+            var cardSortAuto = function(obj){
+            var qn = obj;
+            var $qn = $("#question_" + qn.label);
+            var $submit_btn = $('.continue');
+            var $flash_submit = $('.sq-cardsort-buckets-view');
+            $rows = $ (".survey-q-grid-rowlegend").size();
+            $submit_btn.hide();
+            $flash_submit.bind('click', function () {
+                         var $qn = $ ("div#question_" + qn.label);
+                         var $lastRow = $qn.find("td input:checked");
+                         if ($lastRow.length > ($rows-1)){
+                              $submit_btn.click();
+                         }
+                            });
+            $flash_submit.bind('mouseup', function () {
+                         var $qn = $ ("div#question_" + qn.label);
+                         var $lastRow = $qn.find("td input:checked");
+                         if ($lastRow.length == ($rows-1)){
+                              setTimeout(function() {$submit_btn.click()} , 1*1000)
+             }
+                });
+
+          };
+
+          cardSortAuto(settings.passObj);
+        }
+
         
         /******************************* makeImbBtn ********************************/
         /**
