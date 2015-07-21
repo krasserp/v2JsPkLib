@@ -94,29 +94,25 @@
          * @return {[type]}        nothing
          */
         if(action==='cardSortAuto'){
-            var cardSortAuto = function(obj){
-            var qn = obj;
-            var $qn = $("div[id^='question_'");
-            var $submit_btn = $('.continue');
-            var $flash_submit = $('.sq-cardsort-buckets-view');
-            $rows = $(".survey-q-grid-rowlegend").size();
-            $submit_btn.hide();
-            $flash_submit.bind('click', function () {
-                         var $lastRow = $qn.find("td input:checked");
-                         if ($lastRow.length > ($rows-1)){
-                              $submit_btn.click();
-                         }
-                            });
-            $flash_submit.bind('mouseup', function () {
-                         var $lastRow = $qn.find("td input:checked");
-                         if ($lastRow.length == ($rows-1)){
-                              setTimeout(function() {$submit_btn.click();} , 1*1000);
-             }
-                });
+            var cardSortAuto = function(){
+              var $qn = $("div[id^='question_'");
+              var $submit_btn = $('.continue');
+              var $flash_submit = $('.sq-cardsort-buckets-view');
+              var $rows = $(".survey-q-grid-rowlegend").size();
+              
+              $submit_btn.hide();
 
-          };
+              function autoSubmit (){
+                var $lastRow = $qn.find("td input:checked");
+                if ($lastRow.length == ($rows)){
+                  setTimeout(function() {$submit_btn.click();} , 1000);
+                }
+              }
 
-          cardSortAuto(settings.passObj);
+              $flash_submit.bind('click', function(){autoSubmit();});
+              $flash_submit.bind('mouseup', function(){autoSubmit();});
+            };
+          cardSortAuto();
         }
 
         
